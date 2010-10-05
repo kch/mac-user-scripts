@@ -13,6 +13,7 @@
 require   'pathname'
 require   'fileutils'
 framework 'Cocoa'
+framework 'ScriptingBridge'
 
 # try to get honest-to-god paths from the clipboard (you'd get these via ⌘C in the Finder)
 paths_from_clipboard = Array.new NSPasteboard.generalPasteboard.pasteboardItems # <- The Array.new bit is to ensure we end up with a real ruby Array,
@@ -29,8 +30,8 @@ end
 ($stderr.puts "Clipboard does not contain path data"; exit 2) if paths_from_clipboard.empty?
 
 
-# Get the Finder's insertion location via osascript because rb-appscript doesn't work with macruby ATM
-abs_path_to_link_destination_folder = Pathname.new `osascript -e 'tell application "Finder" to get POSIX path of (insertion location as alias)'`.chomp
+# Get the Finder's insertion location via ScriptingBridge because rb-appscript doesn't work with macruby ATM
+abs_path_to_link_destination_folder = Pathname.new(NSURL.URLWithString(SBApplication.applicationWithBundleIdentifier('com.apple.finder').properties["insertionLocation"].properties["URL"]).path)
 
 rel_path_to_link_sources_and_target_basenames = paths_from_clipboard.map { |abs_path_to_link_source|
   [ abs_path_to_link_source.relative_path_from(abs_path_to_link_destination_folder),
