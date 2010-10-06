@@ -21,5 +21,5 @@ new_track_names = Open3::popen3("mate -w") do |stdin, stdout, stderr|
 end
 
 tracks.zip(old_track_names, new_track_names)
-  .select { |*, new_name, old_name| new_name != old_name    }
-  .each   { |track, *, new_name   | track.name.set new_name }
+  .select { |*, old_name, new_name| old_name != new_name    }
+  .each   { |track, *,    new_name| track.name.set new_name }
