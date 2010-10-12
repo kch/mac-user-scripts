@@ -14,5 +14,5 @@ end
 
 desc "Hide files that are not scripts from the Finder, and, hence, from the FastScripts menu."
 task :"hide-nonscripts" do
-  system SET_FILE, "-a", "V", *NON_SCRIPTS
+  system SET_FILE, "-a", "V", *NON_SCRIPTS.select { |f| File.exist? f }
 end
