@@ -1,18 +1,21 @@
 #!/usr/bin/env rake
-# encoding: UTF-8
 
-SET_FILE    = "/Developer/usr/bin/SetFile"
-NON_SCRIPTS = %w[ MIT_LICENSE README.md Rakefile lib ]
-HIDE_EXTS   = "rb"
+SET_FILE = '/Developer/usr/bin/SetFile'
+HIDE_EXTS = %w[ rb ]
 
 task :default => [:"hide-extensions", :"hide-nonscripts"]
 
 desc "Set script files to have their extensions hidden in the Finder, and, hence, in the FastScripts menu."
 task :"hide-extensions" do
-  system SET_FILE, "-a", "E", *Dir["Applications/**/*.{#{HIDE_EXTS}}"], *Dir["*.{#{HIDE_EXTS}}"]
+  glob = "*.{#{HIDE_EXTS.join(',')}}"
+  files = Dir["Applications/**/#{glob}"] + Dir[glob]
+  puts "Hiding file extensions for #{files.size} files..."
+  system SET_FILE, "-a", "E", *files
 end
 
 desc "Hide files that are not scripts from the Finder, and, hence, from the FastScripts menu."
 task :"hide-nonscripts" do
-  system SET_FILE, "-a", "V", *NON_SCRIPTS.select { |f| File.exist? f }
+  files = %w[ MIT_LICENSE README.md Rakefile lib ].select { |f| File.exist? f }
+  puts "Hiding #{files.size} non-script files..."
+  system SET_FILE, "-a", "V", *files
 end
